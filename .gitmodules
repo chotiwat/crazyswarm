@@ -22,3 +22,7 @@
 	path = crazyradio-firmware
 	url = https://github.com/whoenig/crazyradio-firmware.git
 	branch = noAckMode
+[submodule "ros_ws/src/apriltags_ros"]
+	path = ros_ws/src/apriltags_ros
+	url = https://github.com/chotiwat/apriltags_ros.git
+	branch = apriltag2
