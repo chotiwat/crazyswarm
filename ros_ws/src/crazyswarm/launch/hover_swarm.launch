@@ -2,6 +2,12 @@
 <launch>
   <arg name="joy_dev" default="/dev/input/js0" />
 
+  <arg name="image_width" default="640" />
+  <arg name="image_height" default="480" />
+  <arg name="framerate" default="60" />
+  <arg name="video_device" default="/dev/video0" />
+  <arg name="tag_family" default="25h9" />
+
   <rosparam command="load" file="$(find crazyswarm)/launch/crazyflies.yaml" />
 
 
@@ -20,8 +26,8 @@
         flightmode:
           posCtrl: 1
         ctrlMel:
-          kp_xy: 0.6 # p for position
-          kd_xy: 0.5 # d for position
+          kp_xy: 0.4 # p for position
+          kd_xy: 0.33 # d for position
           ki_xy: 0.05
           i_range_xy: 2.0
           kR_xy: 70000 # p for attitude
@@ -43,33 +49,6 @@
           solidGreen: 0 # if set to solid color
           solidRed: 0 # if set to solid color
           headlightEnable: 0
-      # tracking
-      host_name: "vicon"
-      use_vicon_tracker: false # set to false to use custom object tracking instead
-      save_point_clouds: ~/pointCloud.ot
-      interactive_object: active-wand
-      numMarkerConfigurations: 1
-      markerConfigurations:
-        "0":
-          numPoints: 4
-          offset: [0.0, -0.01, -0.04]
-          points:
-            "0": [0.0177184,0.0139654,0.0557585]
-            "1": [-0.0262914,0.0509139,0.0402475]
-            "2": [-0.0328889,-0.02757,0.0390601]
-            "3": [0.0431307,-0.0331216,0.0388839]
-      numDynamicsConfigurations: 1
-      dynamicsConfigurations:
-        "0":
-          maxXVelocity: 2.0
-          maxYVelocity: 2.0
-          maxZVelocity: 3.0
-          maxPitchRate: 20.0
-          maxRollRate: 20.0
-          maxYawRate: 10.0
-          maxRoll: 1.4
-          maxPitch: 1.4
-          maxFitnessScore: 0.001
       print_latency: False
       write_csvs: True
       force_no_cache: False
@@ -98,6 +77,44 @@
   <node name="object_tracker" pkg="object_tracker" type="object_tracker_node" output="screen">
     <rosparam command="load" file="$(find crazyswarm)/launch/object_tracker.yaml" />
   </node> -->
+
+  <node name="usb_cam" pkg="usb_cam" type="usb_cam_node" output="screen" >
+    <param name="video_device" value="$(arg video_device)" />
+    <param name="image_width" value="$(arg image_width)" />
+    <param name="image_height" value="$(arg image_height)" />
+    <param name="pixel_format" value="yuyv" />
+    <param name="camera_frame_id" value="usb_cam" />
+    <param name="io_method" value="mmap"/>
+    <param name="framerate" value="$(arg framerate)" />
+  </node>
+
+  <!-- run apriltags detector -->
+  <node pkg="apriltags_ros" type="apriltag_detector_node" name="apriltag_detector" output="screen">
+    <!-- Remap topic required by the node to custom topics -->
+    <remap from="image_rect" to="/usb_cam/image_raw" />
+    <remap from="camera_info" to="/usb_cam/camera_info" />
+
+    <!-- Optional: Subscribe to the compressed stream-->
+    <param name="image_transport" type="str" value="compressed" />
+
+    <!-- Select the tag family: 16h5, 25h7, 25h9, 36h9, or 36h11(default) -->
+    <param name="tag_family" type="str" value="$(arg tag_family)" />
+
+    <!-- Enable projected optical measurements for more accurate tag transformations -->
+    <!-- This exists for backwards compatability and should be left true for new setups -->
+    <param name="projected_optics" type="bool" value="true" />
+
+    <!-- Describe the tags -->
+    <rosparam param="tag_descriptions">
+      [
+        {id: 0, size: 0.038, frame_id: tag_id_0},
+        {id: 1, size: 0.038, frame_id: tag_id_1},
+        {id: 2, size: 0.038, frame_id: tag_id_2}
+      ]
+    </rosparam>
+  </node>
+
+  <node pkg="tf" type="static_transform_publisher" name="cam_broadcaster" args="0 0 0 0 0 0 1 /world /usb_cam 10" />
 
   <node name="rviz" pkg="rviz" type="rviz" args="-d $(find crazyswarm)/launch/test.rviz"/>
 
