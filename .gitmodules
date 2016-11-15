@@ -1,11 +1,11 @@
 [submodule "ros_ws/src/crazyflie_ros"]
 	path = ros_ws/src/crazyflie_ros
-	url = https://github.com/USC-ACTLab/crazyflie_ros.git
-	branch = crazyswarm_master
+	url = https://github.com/chotiwat/crazyflie_ros.git
+	branch = crazyswarm_tf
 [submodule "crazyflie-firmware"]
 	path = crazyflie-firmware
-	url = https://github.com/USC-ACTLab/crazyflie-firmware.git
-	branch = crazyswarm_master
+	url = https://github.com/chotiwat/crazyflie-firmware.git
+	branch = crazyswarm_apriltag
 [submodule "crazyflie2-nrf-firmware"]
 	path = crazyflie2-nrf-firmware
 	url = https://github.com/USC-ACTLab/crazyflie2-nrf-firmware.git
