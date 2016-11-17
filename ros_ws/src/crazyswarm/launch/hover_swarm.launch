@@ -30,8 +30,8 @@
         flightmode:
           posCtrl: 1
         ctrlMel:
-          kp_xy: 0.4 # p for position
-          kd_xy: 0.33 # d for position
+          kp_xy: 0.2 # 0.4 p for position
+          kd_xy: 0.1 # 0.33 d for position
           ki_xy: 0.05
           i_range_xy: 2.0
           kR_xy: 70000 # p for attitude
@@ -41,8 +41,8 @@
           ki_m_z: 500     # yaw
           kd_omega_rp: 100 # roll and pitch angular velocity d gain
           i_range_m_z: 1500
-          kp_z: 0.8
-          kd_z: 0.5
+          kp_z: 0.4 # 0.8
+          kd_z: 0.2 # 0.5
           ki_z: 0.05
           i_range_z: 0.4
           mass: 0.032
