@@ -19,7 +19,7 @@
     <rosparam>
       broadcast_address: "FFE7E7E7E7"
       #broadcast_uri: "radio://0/100/2M/FFE7E7E7E7"
-      world_frame: "/world"
+      world_frame: "/odom"
       genericLogTopics: ["log1"]
       genericLogTopicFrequencies: [10]
       # genericLogTopic_log1_Variables: ["ekfprof.usec_setup", "ekfprof.usec_innov", "ekfprof.usec_gain", "ekfprof.usec_corr", "ekfprof.usec_cov"]
@@ -82,6 +82,8 @@
     <rosparam command="load" file="$(find crazyswarm)/launch/object_tracker.yaml" />
   </node> -->
 
+  <!-- TODO: add v4l config "v4l2-ctl -c gain_automatic=0,gain=10,auto_exposure=1,contrast=32,exposure=255" -->
+
   <node name="usb_cam" pkg="usb_cam" type="usb_cam_node" output="screen" >
     <param name="video_device" value="$(arg video_device)" />
     <param name="image_width" value="$(arg image_width)" />
@@ -132,7 +134,11 @@
     <node name="ar_track_alvar" pkg="ar_track_alvar" type="individualMarkersNoKinect" respawn="false" output="screen" args="$(arg marker_size) $(arg max_new_marker_error) $(arg max_track_error) $(arg cam_image_topic) $(arg cam_info_topic) $(arg output_frame) $(arg frequency)" />
   </group>
 
-  <node pkg="tf" type="static_transform_publisher" name="cam_broadcaster" args="0 0 0 0 0 0 1 /world /usb_cam 10" />
+  <node pkg="tf" type="static_transform_publisher" name="cam_broadcaster" args="0 0 0 0 0 0 1 /base_link /usb_cam 10" />
+
+  <node pkg="tf" type="static_transform_publisher" name="base_link_broadcaster" args="0 0 0 0 0 0 1 /odom /base_link 10" />
+
+
 
   <group if="$(arg gui)">
     <node name="rviz" pkg="rviz" type="rviz" args="-d $(find crazyswarm)/launch/test.rviz"/>
